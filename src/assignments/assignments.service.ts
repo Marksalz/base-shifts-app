@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
+import { Assignment } from './entities/assignment.entity';
 
 @Injectable()
 export class AssignmentsService {
-  create(createAssignmentDto: CreateAssignmentDto) {
-    return 'This action adds a new assignment';
+  constructor(
+    @InjectModel(Assignment)
+    private assignmentModel: typeof Assignment,
+  ) {}
+
+  async create(createAssignmentDto: CreateAssignmentDto) {
+    return await this.assignmentModel.create({
+      shiftId: createAssignmentDto.shiftId,
+      userId: createAssignmentDto.userId
+    });
   }
 
-  findAll() {
-    return `This action returns all assignments`;
+  async findAll(): Promise<Assignment[]> {
+    return this.assignmentModel.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} assignment`;
+  async findOne(id: number): Promise<Assignment | null> {
+    return this.assignmentModel.findByPk(id);
   }
 
-  update(id: number, updateAssignmentDto: UpdateAssignmentDto) {
-    return `This action updates a #${id} assignment`;
+  async update(id: number, updateAssignmentDto: UpdateAssignmentDto): Promise<Assignment> {
+    await this.assignmentModel.update(updateAssignmentDto, {
+      where: { id },
+    });
+    const updatedAssignment = await this.findOne(id);
+    if (!updatedAssignment) {
+      throw new Error(`Assignment with id ${id} not found`);
+    }
+    return updatedAssignment;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} assignment`;
+  async remove(id: number): Promise<void> {
+    await this.assignmentModel.destroy({
+      where: { id },
+    });
   }
 }
