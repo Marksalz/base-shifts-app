@@ -1,26 +1,46 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateShiftDto } from './dto/create-shift.dto';
 import { UpdateShiftDto } from './dto/update-shift.dto';
+import { Shift } from './entities/shift.entity';
 
 @Injectable()
 export class ShiftsService {
-  create(createShiftDto: CreateShiftDto) {
-    return 'This action adds a new shift';
+  constructor(
+    @InjectModel(Shift)
+    private readonly shiftModel: typeof Shift,
+  ) {}
+
+  async create(createShiftDto: CreateShiftDto): Promise<Shift> {
+    return await this.shiftModel.create({
+      startTime: createShiftDto.startTime,
+      endTime: createShiftDto.endTime,
+      location: createShiftDto.location,
+    });
   }
 
-  findAll() {
-    return `This action returns all shifts`;
+  async findAll(): Promise<Shift[]> {
+    return this.shiftModel.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} shift`;
+  async findOne(id: number): Promise<Shift | null> {
+    return this.shiftModel.findByPk(id);
   }
 
-  update(id: number, updateShiftDto: UpdateShiftDto) {
-    return `This action updates a #${id} shift`;
+  async update(id: number, updateShiftDto: UpdateShiftDto): Promise<Shift> {
+    await this.shiftModel.update(updateShiftDto, {
+      where: { id },
+    });
+    const updatedShift = await this.findOne(id);
+    if (!updatedShift) {
+      throw new Error(`Shift with id ${id} not found`);
+    }
+    return updatedShift;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} shift`;
+  async remove(id: number): Promise<void> {
+    await this.shiftModel.destroy({
+      where: { id },
+    });
   }
 }
