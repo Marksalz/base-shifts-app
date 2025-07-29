@@ -7,6 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ShiftsModule } from './shifts/shifts.module';
 import { AssignmentsModule } from './assignments/assignments.module';
+import { User } from './users/entities/user.entity';
+import { Shift } from './shifts/entities/shift.entity';
+import { Assignment } from './assignments/entities/assignment.entity';
 
 @Module({
   imports: [
@@ -23,6 +26,7 @@ import { AssignmentsModule } from './assignments/assignments.module';
       database: process.env.DB_NAME || 'shiftsapp',
       autoLoadModels: true,
       synchronize: true,
+      models: [User, Shift, Assignment],
     }),
     AuthModule,
     UsersModule,
