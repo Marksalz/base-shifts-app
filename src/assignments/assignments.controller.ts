@@ -5,29 +5,29 @@ import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 
 @Controller('assignments')
 export class AssignmentsController {
-  constructor(private readonly assignmentsService: AssignmentsService) {}
+  constructor(private readonly assignmentsService: AssignmentsService) { }
 
-  @Post()
+  @Post('create')
   create(@Body() createAssignmentDto: CreateAssignmentDto) {
     return this.assignmentsService.create(createAssignmentDto);
   }
 
-  @Get()
+  @Get('read')
   findAll() {
     return this.assignmentsService.findAll();
   }
 
-  @Get(':id')
+  @Get('read:id')
   findOne(@Param('id') id: string) {
     return this.assignmentsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('update:id')
   update(@Param('id') id: string, @Body() updateAssignmentDto: UpdateAssignmentDto) {
     return this.assignmentsService.update(+id, updateAssignmentDto);
   }
 
-  @Delete(':id')
+  @Delete('delete:id')
   remove(@Param('id') id: string) {
     return this.assignmentsService.remove(+id);
   }
