@@ -18,9 +18,9 @@ export class AuthService {
   private setUserCookie(res: Response, userId: number, token: string): void {
     res.cookie(`jwt_user_${userId}`, token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
       sameSite: 'strict',
-      maxAge: 60 * 60 * 1000, // 1 hour (match JWT expiration)
+      maxAge: 60 * 60 * 1000, // 1 hour
     });
   }
 

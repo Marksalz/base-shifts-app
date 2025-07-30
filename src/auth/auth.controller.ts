@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Req, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,11 +21,13 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(AuthGuard)
   logout(@Body() logoutDto: LogoutDto, @Res({ passthrough: true }) res: Response) {
     return this.authService.logout(logoutDto, res);
   }
 
   @Get('profile')
+  @UseGuards(AuthGuard)
   profile() {
     return this.authService.profile();
   }

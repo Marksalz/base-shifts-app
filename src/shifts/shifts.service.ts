@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateShiftDto } from './dto/create-shift.dto';
 import { UpdateShiftDto } from './dto/update-shift.dto';
@@ -9,7 +9,7 @@ export class ShiftsService {
   constructor(
     @InjectModel(Shift)
     private readonly shiftModel: typeof Shift,
-  ) {}
+  ) { }
 
   async create(createShiftDto: CreateShiftDto): Promise<Shift> {
     return await this.shiftModel.create({

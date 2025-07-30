@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
@@ -9,7 +9,7 @@ export class AssignmentsService {
   constructor(
     @InjectModel(Assignment)
     private assignmentModel: typeof Assignment,
-  ) {}
+  ) { }
 
   async create(createAssignmentDto: CreateAssignmentDto) {
     return await this.assignmentModel.create({
@@ -24,6 +24,12 @@ export class AssignmentsService {
 
   async findOne(id: number): Promise<Assignment | null> {
     return this.assignmentModel.findByPk(id);
+  }
+
+  async findByUserId(userId: number) {
+    return this.assignmentModel.findAll({
+      where: { userId: userId }
+    });
   }
 
   async update(id: number, updateAssignmentDto: UpdateAssignmentDto): Promise<Assignment> {

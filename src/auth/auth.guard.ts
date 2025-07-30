@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
             });
 
             // Extract user_id and role from JWT payload
-            const userId = payload.sub; // 'sub' contains the user ID
+            const userId = payload.sub;
             const role = payload.role;
             const username = payload.username;
 
