@@ -19,10 +19,10 @@ export class AuthController {
     return this.authService.login(loginDto, res);
   }
 
-  // @Post('logout')
-  // logout(@Body() logoutDto: LogoutDto) {
-  //   return this.authService.logout(logoutDto);
-  // }
+  @Post('logout')
+  logout(@Body() logoutDto: LogoutDto, @Res({ passthrough: true }) res: Response) {
+    return this.authService.logout(logoutDto, res);
+  }
 
   @Get('profile')
   profile() {

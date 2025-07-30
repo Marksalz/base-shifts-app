@@ -67,11 +67,19 @@ export class AuthService {
     return { user: userWithoutPassword, access_token: token };
   }
 
-  // logout(logoutDto: LogoutDto) {
-  //   // In JWT-based auth, logout is typically handled on the client by deleting the token.
-  //   // Optionally, you can implement token blacklisting here if needed.
-  //   return { message: 'User logged out successfully' };
-  // }
+  logout(logoutDto: LogoutDto, res: Response): { message: string } {
+    try {
+      res.clearCookie(`jwt_user_${logoutDto.userId}`, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      });
+
+      return { message: 'Logged out successfully' };
+    } catch (error) {
+      throw new BadRequestException('Failed to logout user');
+    }
+  }
 
   profile() {
     return 'This returns a logged in users profile from token';

@@ -1,3 +1,7 @@
+import { IsNumber, IsPositive } from 'class-validator';
+
 export class LogoutDto {
-  refreshToken?: string;
+  @IsNumber()
+  @IsPositive()
+  userId: number; // Use lowercase 'number' instead of 'Number'
 }
