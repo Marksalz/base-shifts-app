@@ -42,22 +42,7 @@ export class AuthGuard implements CanActivate {
         }
     }
 
-    private extractTokenFromCookies(request: Request, specificUserId?: number): string | undefined {
-        const cookies = request.cookies;
-        if (!cookies) return undefined;
-
-        if (specificUserId) {
-            // Check for a specific user's cookie
-            return cookies[`jwt_user_${specificUserId}`];
-        }
-
-        // Find any JWT cookie that matches the pattern jwt_user_*
-        for (const [key, value] of Object.entries(cookies)) {
-            if (key.startsWith('jwt_user_') && value) {
-                return value as string;
-            }
-        }
-
-        return undefined;
+    private extractTokenFromCookies(request: Request): string | undefined {
+        return request.cookies?.jwt_token; // Single cookie name
     }
 }

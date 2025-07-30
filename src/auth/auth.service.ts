@@ -16,9 +16,9 @@ export class AuthService {
   ) { }
 
   private setUserCookie(res: Response, userId: number, token: string): void {
-    res.cookie(`jwt_user_${userId}`, token, {
+    res.cookie('jwt_token', token, { // Single cookie name
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Only secure in production
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 1000, // 1 hour
     });
