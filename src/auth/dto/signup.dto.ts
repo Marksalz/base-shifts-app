@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsString, IsEnum, IsNotEmpty, IsEmail } from 'class-validator';
 
 export enum UserRole {
     SOLDIER = 'soldier',
@@ -9,6 +9,9 @@ export class SignupDto {
     @IsString()
     @IsNotEmpty()
     username: string;
+
+    @IsEmail()
+    email: string;
 
     @IsString()
     @IsNotEmpty()
