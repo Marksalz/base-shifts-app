@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { Assignment } from './entities/assignment.entity';
+import { Shift } from '../shifts/entities/shift.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AssignmentsService {
@@ -18,17 +20,58 @@ export class AssignmentsService {
     });
   }
 
-  async findAll(): Promise<Assignment[]> {
-    return this.assignmentModel.findAll();
+  async findAll(): Promise<Shift[]> {
+    const assignments = await this.assignmentModel.findAll({
+      include: [
+        {
+          model: Shift,
+          required: true,
+        },
+        {
+          model: User,
+          attributes: ['id', 'username', 'email'],
+        }
+      ]
+    });
+
+    return assignments.map(assignment => {
+      const shift = assignment.shift;
+      (shift as any).assignmentId = assignment.id;
+      (shift as any).assignedUser = assignment.user;
+      return shift;
+    });
   }
 
   async findOne(id: number): Promise<Assignment | null> {
-    return this.assignmentModel.findByPk(id);
+    return this.assignmentModel.findByPk(id, {
+      include: [
+        {
+          model: Shift,
+          required: true,
+        },
+        {
+          model: User,
+          attributes: ['id', 'username', 'email'],
+        }
+      ]
+    });
   }
 
-  async findByUserId(userId: number) {
-    return this.assignmentModel.findAll({
-      where: { userId: userId }
+  async findByUserId(userId: number): Promise<Shift[]> {
+    const assignments = await this.assignmentModel.findAll({
+      where: { userId: userId },
+      include: [
+        {
+          model: Shift,
+          required: true,
+        }
+      ]
+    });
+
+    return assignments.map(assignment => {
+      const shift = assignment.shift;
+      (shift as any).assignmentId = assignment.id;
+      return shift;
     });
   }
 

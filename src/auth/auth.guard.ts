@@ -1,9 +1,4 @@
-import {
-    CanActivate,
-    ExecutionContext,
-    Injectable,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -24,12 +19,10 @@ export class AuthGuard implements CanActivate {
                 secret: process.env.JWT_SECRET,
             });
 
-            // Extract user_id and role from JWT payload
             const userId = payload.sub;
             const role = payload.role;
             const username = payload.username;
 
-            // Attach user info to request for use in controllers
             request['user'] = {
                 id: userId,
                 username: username,
@@ -43,6 +36,6 @@ export class AuthGuard implements CanActivate {
     }
 
     private extractTokenFromCookies(request: Request): string | undefined {
-        return request.cookies?.jwt_token; // Single cookie name
+        return request.cookies?.jwt_token;
     }
 }

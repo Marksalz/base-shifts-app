@@ -2,7 +2,6 @@ import { Injectable, ConflictException, BadRequestException, UnauthorizedExcepti
 import { Response } from 'express';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { LogoutDto } from './dto/logout.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcryptjs';
@@ -15,8 +14,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) { }
 
-  private setUserCookie(res: Response, userId: number, token: string): void {
-    res.cookie('jwt_token', token, { // Single cookie name
+  private setUserCookie(res: Response, token: string): void {
+    res.cookie('jwt_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -30,7 +29,7 @@ export class AuthService {
       const payload = { sub: user.id, username: user.username, role: user.role };
       const token = await this.jwtService.signAsync(payload);
 
-      this.setUserCookie(res, user.id, token);
+      this.setUserCookie(res, token);
 
       return { user, access_token: token };
 
@@ -59,7 +58,7 @@ export class AuthService {
     const payload = { sub: user.id, username: user.username, role: user.role };
     const token = await this.jwtService.signAsync(payload);
 
-    this.setUserCookie(res, user.id, token);
+    this.setUserCookie(res, token);
 
     const plainUser = user.get({ plain: true });
     const { password, ...userWithoutPassword } = plainUser;
@@ -67,21 +66,24 @@ export class AuthService {
     return { user: userWithoutPassword, access_token: token };
   }
 
-  logout(logoutDto: LogoutDto, res: Response): { message: string } {
+  logout(userId: number, req: any, res: Response): { message: string } {
     try {
-      res.clearCookie(`jwt_user_${logoutDto.userId}`, {
+      if (req.user.id !== userId) {
+        throw new UnauthorizedException('You can only logout your own session');
+      }
+
+      res.clearCookie('jwt_token', {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
       });
 
       return { message: 'Logged out successfully' };
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new BadRequestException('Failed to logout user');
     }
-  }
-
-  profile() {
-    return 'This returns a logged in users profile from token';
   }
 }
