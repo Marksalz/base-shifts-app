@@ -20,7 +20,7 @@ export class AssignmentsService {
     });
   }
 
-  async findAll(): Promise<Shift[]> {
+  async findAll(): Promise<any[]> {
     const assignments = await this.assignmentModel.findAll({
       include: [
         {
@@ -30,15 +30,22 @@ export class AssignmentsService {
         {
           model: User,
           attributes: ['id', 'username', 'email'],
+          required: true,
         }
       ]
     });
 
+    //console.log('Raw assignments:', JSON.stringify(assignments, null, 2));
+
     return assignments.map(assignment => {
-      const shift = assignment.shift;
-      (shift as any).assignmentId = assignment.id;
-      (shift as any).assignedUser = assignment.user;
-      return shift;
+      const shift = assignment.shift.toJSON();
+      const user = assignment.user.toJSON();
+
+      return {
+        ...shift,
+        assignmentId: assignment.id,
+        assignedUser: user
+      };
     });
   }
 
