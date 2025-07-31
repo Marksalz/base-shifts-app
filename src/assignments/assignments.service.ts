@@ -35,8 +35,6 @@ export class AssignmentsService {
       ]
     });
 
-    //console.log('Raw assignments:', JSON.stringify(assignments, null, 2));
-
     return assignments.map(assignment => {
       const shift = assignment.shift.toJSON();
       const user = assignment.user.toJSON();
@@ -46,21 +44,6 @@ export class AssignmentsService {
         assignmentId: assignment.id,
         assignedUser: user
       };
-    });
-  }
-
-  async findOne(id: number): Promise<Assignment | null> {
-    return this.assignmentModel.findByPk(id, {
-      include: [
-        {
-          model: Shift,
-          required: true,
-        },
-        {
-          model: User,
-          attributes: ['id', 'username', 'email'],
-        }
-      ]
     });
   }
 
@@ -82,15 +65,15 @@ export class AssignmentsService {
     });
   }
 
-  async update(id: number, updateAssignmentDto: UpdateAssignmentDto): Promise<Assignment> {
+  async update(id: number, updateAssignmentDto: UpdateAssignmentDto): Promise<{ message: string, updatedAssignment: Assignment }> {
     await this.assignmentModel.update(updateAssignmentDto, {
       where: { id },
     });
-    const updatedAssignment = await this.findOne(id);
+    const updatedAssignment = await this.assignmentModel.findByPk(id);
     if (!updatedAssignment) {
       throw new Error(`Assignment with id ${id} not found`);
     }
-    return updatedAssignment;
+    return { message: "Assignment updated succesefully", updatedAssignment };
   }
 
   async remove(id: number): Promise<void> {
